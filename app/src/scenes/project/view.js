@@ -24,7 +24,7 @@ export default function ProjectView() {
   useEffect(() => {
     (async () => {
       const { data: u } = await api.get(`/project/${id}`);
-      setProject(u);
+      setProject(u[0]);
     })();
   }, []);
 
@@ -60,7 +60,6 @@ export default function ProjectView() {
 }
 
 const ProjectDetails = ({ project }) => {
-  console.log(project);
   return (
     <div>
       <div className="flex flex-wrap p-3">
@@ -273,19 +272,17 @@ const Links = ({ project }) => {
           </a>
         </div>
       )}
-      {project.links?.map((link) => (
-        <div className="group text-sm font-medium	text-blue-700 border-[1px] border-blue-700 rounded-full overflow-hidden">
-          <a target="blank" href={link.url} className="break-words cursor-pointer text-blue-700 hover:text-white hover:bg-blue-700 flex hover:no-underline h-full">
-            <div className="flex items-center bg-blue-700 py-1 px-2 rounded-r-full ">
-              <IoIosLink className="group-hover:scale-110 text-white" />
-            </div>
-            <div className="flex items-center px-3 py-1">
-              {link?.label?.substring(0, 20)}
-              {link?.label?.length > 20 ? "..." : ""}
-            </div>
-          </a>
-        </div>
-      ))}
+      <div className="group text-sm font-medium	text-blue-700 border-[1px] border-blue-700 rounded-full overflow-hidden">
+        <a target="blank" href={project._id} className="break-words cursor-pointer text-blue-700 hover:text-white hover:bg-blue-700 flex hover:no-underline h-full">
+          <div className="flex items-center bg-blue-700 py-1 px-2 rounded-r-full ">
+            <IoIosLink className="group-hover:scale-110 text-white" />
+          </div>
+          <div className="flex items-center px-3 py-1">
+            {project?.label?.substring(0, 20)}
+            {project?.label?.length > 20 ? "..." : ""}
+          </div>
+        </a>
+      </div>
     </div>
   );
 };
