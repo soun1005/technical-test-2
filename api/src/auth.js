@@ -63,6 +63,9 @@ class Auth {
 
       if (password && !validatePassword(password)) return res.status(200).send({ ok: false, user: null, code: PASSWORD_NOT_VALIDATED });
 
+      const existingUser = await this.model.findOne({ name: username, organisation })
+      if (existingUser) return res.status(409).send({ ok: false, user: null, code: USER_ALREADY_REGISTERED });
+
       const user = await this.model.create({ name: username, organisation, password });
       const token = jwt.sign({ _id: user._id }, config.secret, { expiresIn: JWT_MAX_AGE });
       const opts = { maxAge: COOKIE_MAX_AGE, secure: config.ENVIRONMENT === "development" ? false : true, httpOnly: false };
