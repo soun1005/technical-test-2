@@ -1,14 +1,26 @@
+/* eslint-disable react/display-name */
 import { Field, Formik } from "formik";
 import React from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, Redirect } from "react-router-dom";
+import { Redirect } from "react-router-dom";
 import validator from "validator";
 
 import { setUser } from "../../redux/auth/actions";
 
 import LoadingButton from "../../components/loadingButton";
 import api from "../../services/api";
+
+const getErrorMessage = (code) => {
+  switch (code) {
+    case "PASSWORD_NOT_VALIDATED":
+      return "Password should be 6 characters minimum";
+    case "USER_ALREADY_REGISTERED":
+      return "User already registered";
+    default:
+      return "Failed to signup";
+  }
+};
 
 export default () => {
   const dispatch = useDispatch();
@@ -24,12 +36,14 @@ export default () => {
         initialValues={{ username: "", organisation: "", password: "" }}
         onSubmit={async (values, actions) => {
           try {
-            const { user, token } = await api.post(`/user/signup`, values);
+            const { user, token, ok, code } = await api.post(`/user/signup`, values);
+
             if (token) api.setToken(token);
             if (user) dispatch(setUser(user));
+            if (!ok) toast.error(getErrorMessage(code));
           } catch (e) {
             console.log("e", e);
-            toast.error("Wrong login", e.code);
+            toast.error(getErrorMessage(e.code));
           }
           actions.setSubmitting(false);
         }}>
